@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.12.8
 
 WORKDIR /app
 
@@ -9,12 +9,17 @@ RUN apt-get update && \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Add Tini
+ENV TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
 # Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY litellm_exporter.py .
+COPY src/litellm_exporter/ /app/litellm_exporter/
 
 # Default environment variables
 ENV METRICS_PORT=9090
@@ -22,7 +27,6 @@ ENV LITELLM_DB_HOST=localhost
 ENV LITELLM_DB_PORT=5432
 ENV LITELLM_DB_NAME=litellm
 ENV LITELLM_DB_USER=postgres
-ENV LITELLM_DB_PASSWORD=
 ENV DB_MIN_CONNECTIONS=1
 ENV DB_MAX_CONNECTIONS=10
 
@@ -31,6 +35,9 @@ ENV METRICS_UPDATE_INTERVAL=15
 ENV METRICS_SPEND_WINDOW=30d
 ENV METRICS_REQUEST_WINDOW=24h
 ENV METRICS_ERROR_WINDOW=1h
+
+# Sensitive environment variable not included here
+# ENV LITELLM_DB_PASSWORD=
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
@@ -43,9 +50,7 @@ USER exporter
 EXPOSE ${METRICS_PORT}
 
 # Use tini as init system to handle signals properly
-ENV TINI_VERSION v0.19.0
-ADD --chmod=755 https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 ENTRYPOINT ["/tini", "--"]
 
-# Run the exporter
-CMD ["python", "litellm_exporter.py"]
+# Run the exporter module directly
+CMD ["python", "-m", "litellm_exporter"]

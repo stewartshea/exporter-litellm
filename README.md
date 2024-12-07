@@ -57,6 +57,8 @@ This exporter provides comprehensive Prometheus metrics for LiteLLM, exposing us
 
 ## Configuration
 
+For a comprehensive guide to all environment variables, their impacts, and best practices, see [ENV_VARS.md](ENV_VARS.md).
+
 ### Database Connection
 - `LITELLM_DB_HOST`: PostgreSQL host (default: localhost)
 - `LITELLM_DB_PORT`: PostgreSQL port (default: 5432)
