@@ -8,8 +8,8 @@ services:
       - LITELLM_DB_HOST=192.168.3.10
       - LITELLM_DB_PORT=4001
       - LITELLM_DB_NAME=litellm
-      - LITELLM_DB_USER=bitop-litellm
-      - LITELLM_DB_PASSWORD=aZqgChcb8nqdZ6j2CnHTxBTsBp1WB5B2
+      - LITELLM_DB_USER=litellm
+      - LITELLM_DB_PASSWORD=password
       - DB_MIN_CONNECTIONS=1
       - DB_MAX_CONNECTIONS=10
       - METRICS_UPDATE_INTERVAL=15
