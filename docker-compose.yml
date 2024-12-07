@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  litellm-exporter:
+    build: .
+    ports:
+      - "9090:9090"
+    environment:
+      - LITELLM_DB_HOST=your-db-host
+      - LITELLM_DB_PORT=5432
+      - LITELLM_DB_NAME=litellm
+      - LITELLM_DB_USER=your-db-user
+      - LITELLM_DB_PASSWORD=your-db-password
+      - DB_MIN_CONNECTIONS=1
+      - DB_MAX_CONNECTIONS=10
+      - METRICS_UPDATE_INTERVAL=15
+      - METRICS_SPEND_WINDOW=30d
+      - METRICS_REQUEST_WINDOW=24h
+      - METRICS_ERROR_WINDOW=1h
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 5s

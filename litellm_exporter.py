@@ -19,6 +19,7 @@ class MetricsConfig:
         self.spend_window = os.getenv('METRICS_SPEND_WINDOW', '30d')  # Default 30 days for spend metrics
         self.request_window = os.getenv('METRICS_REQUEST_WINDOW', '24h')  # Default 24 hours for request metrics
         self.error_window = os.getenv('METRICS_ERROR_WINDOW', '1h')  # Default 1 hour for error metrics
+        self.update_interval = int(os.getenv('METRICS_UPDATE_INTERVAL', '15'))  # Default 15 seconds for metrics update
         
         # Convert time window strings to PostgreSQL intervals
         self.time_windows = {
@@ -399,11 +400,12 @@ def main():
     logger.info(f"Metrics server started on port {metrics_port}")
     logger.info(f"Using time windows: spend={metrics_config.spend_window}, "
                f"request={metrics_config.request_window}, error={metrics_config.error_window}")
+    logger.info(f"Metrics update interval: {metrics_config.update_interval} seconds")
 
-    # Update metrics every 15 seconds
+    # Update metrics based on configured interval
     while True:
         collector.update_all_metrics()
-        time.sleep(15)
+        time.sleep(metrics_config.update_interval)
 
 if __name__ == '__main__':
     main()

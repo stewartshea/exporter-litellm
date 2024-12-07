@@ -68,6 +68,7 @@ This exporter provides comprehensive Prometheus metrics for LiteLLM, exposing us
 
 ### Metric Collection Configuration
 - `METRICS_PORT`: Port to expose metrics on (default: 9090)
+- `METRICS_UPDATE_INTERVAL`: How frequently metrics are updated in seconds (default: 15)
 - `METRICS_SPEND_WINDOW`: Time window for spend metrics (default: 30d)
 - `METRICS_REQUEST_WINDOW`: Time window for request metrics (default: 24h)
 - `METRICS_ERROR_WINDOW`: Time window for error metrics (default: 1h)
@@ -95,7 +96,40 @@ Different time windows affect both metric accuracy and database performance:
   - Helps identify current system issues
   - Minimal impact on database performance
 
+- **Update Interval** (default: 15s)
+  - Controls how frequently metrics are refreshed
+  - Lower values provide more real-time data but increase database load
+  - Higher values reduce database load but decrease metric freshness
+  - Adjust based on your monitoring needs and database capacity
+
+## Running with Docker Compose
+
+The easiest way to get started is using Docker Compose, which sets up both the exporter and PostgreSQL:
+
+1. Clone the repository and navigate to the directory:
+```bash
+git clone https://github.com/yourusername/exporter-litellm.git
+cd exporter-litellm
+```
+
+2. Update the database credentials in docker-compose.yml if needed:
+```yaml
+environment:
+  - POSTGRES_PASSWORD=your_password  # Change this
+```
+
+3. Start the services:
+```bash
+docker-compose up -d
+```
+
+This will start:
+- PostgreSQL on port 5432
+- LiteLLM Exporter on port 9090
+
 ## Running with Docker
+
+If you want to run just the exporter (assuming you have your own database):
 
 1. Build the Docker image:
 ```bash
@@ -113,6 +147,7 @@ docker run -d \
   -e LITELLM_DB_PASSWORD=your-db-password \
   -e DB_MIN_CONNECTIONS=1 \
   -e DB_MAX_CONNECTIONS=10 \
+  -e METRICS_UPDATE_INTERVAL=15 \
   -e METRICS_SPEND_WINDOW=30d \
   -e METRICS_REQUEST_WINDOW=24h \
   -e METRICS_ERROR_WINDOW=1h \
@@ -135,6 +170,7 @@ export LITELLM_DB_USER=your-db-user
 export LITELLM_DB_PASSWORD=your-db-password
 export DB_MIN_CONNECTIONS=1
 export DB_MAX_CONNECTIONS=10
+export METRICS_UPDATE_INTERVAL=15
 export METRICS_SPEND_WINDOW=30d
 export METRICS_REQUEST_WINDOW=24h
 export METRICS_ERROR_WINDOW=1h
@@ -188,3 +224,11 @@ Here are some example Prometheus queries for creating Grafana dashboards:
 - Budget utilization by alias: `sum by (entity_alias) (litellm_budget_utilization)`
 
 These metrics provide comprehensive monitoring of your LiteLLM deployment, enabling you to track usage, performance, costs, and potential issues. The addition of alias labels and configurable time windows makes it easier to create meaningful dashboards and manage database performance.
+
+## License
+
+This project is licensed under the GLWT (Good Luck With That) Public License - see the [LICENSE](LICENSE) file for details.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.
