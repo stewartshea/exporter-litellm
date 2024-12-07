@@ -66,6 +66,8 @@ This exporter provides comprehensive Prometheus metrics for LiteLLM, exposing us
 - `DB_MIN_CONNECTIONS`: Minimum number of database connections in the pool (default: 1)
 - `DB_MAX_CONNECTIONS`: Maximum number of database connections in the pool (default: 10)
 
+For security best practices, it's recommended to create a dedicated read-only PostgreSQL user for the exporter. See [POSTGRES_SETUP.md](POSTGRES_SETUP.md) for detailed instructions on setting up a read-only database user.
+
 ### Metric Collection Configuration
 - `METRICS_PORT`: Port to expose metrics on (default: 9090)
 - `METRICS_UPDATE_INTERVAL`: How frequently metrics are updated in seconds (default: 15)
@@ -104,7 +106,7 @@ Different time windows affect both metric accuracy and database performance:
 
 ## Running with Docker Compose
 
-The easiest way to get started is using Docker Compose, which sets up both the exporter and PostgreSQL:
+The easiest way to get started is using Docker Compose:
 
 1. Clone the repository and navigate to the directory:
 ```bash
@@ -112,20 +114,20 @@ git clone https://github.com/yourusername/exporter-litellm.git
 cd exporter-litellm
 ```
 
-2. Update the database credentials in docker-compose.yml if needed:
+2. Update the database connection details in docker-compose.yml:
 ```yaml
 environment:
-  - POSTGRES_PASSWORD=your_password  # Change this
+  - LITELLM_DB_HOST=your-db-host
+  - LITELLM_DB_USER=your-db-user
+  - LITELLM_DB_PASSWORD=your-db-password
 ```
 
-3. Start the services:
+3. Start the exporter:
 ```bash
 docker-compose up -d
 ```
 
-This will start:
-- PostgreSQL on port 5432
-- LiteLLM Exporter on port 9090
+The exporter will start on port 9090 and connect to your existing LiteLLM database.
 
 ## Running with Docker
 

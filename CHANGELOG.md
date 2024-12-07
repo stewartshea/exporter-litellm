@@ -5,6 +5,24 @@ All notable changes to the LiteLLM Prometheus Exporter will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-01-09
+
+### Added
+- Repository configuration files:
+  - .gitignore for Python projects
+  - .gitattributes for line ending handling
+  - .editorconfig for consistent coding styles
+  - pyproject.toml for Python tools configuration
+  - .pre-commit-config.yaml for code quality checks
+- POSTGRES_SETUP.md with detailed instructions for creating read-only database users
+- Security best practices documentation
+- Development environment configuration
+
+### Changed
+- Simplified docker-compose.yml to use existing LiteLLM database
+- Updated README.md with database security recommendations
+- Improved deployment documentation
+
 ## [0.2.0] - 2024-01-09
 
 ### Added
