@@ -1,15 +1,15 @@
 services:
   litellm-exporter:
-    build: .
+    image: ghcr.io/ncecere/exporter-litellm:latest
     platform: linux/amd64
     ports:
       - "9090:9090"
     environment:
-      - LITELLM_DB_HOST=192.168.3.10
-      - LITELLM_DB_PORT=4001
-      - LITELLM_DB_NAME=litellm
-      - LITELLM_DB_USER=litellm
-      - LITELLM_DB_PASSWORD=password
+      - LITELLM_DB_HOST=${LITELLM_DB_HOST}
+      - LITELLM_DB_PORT=${LITELLM_DB_PORT}
+      - LITELLM_DB_NAME=${LITELLM_DB_NAME}
+      - LITELLM_DB_USER=${LITELLM_DB_USER}
+      - LITELLM_DB_PASSWORD=${LITELLM_DB_PASSWORD}
       - DB_MIN_CONNECTIONS=1
       - DB_MAX_CONNECTIONS=10
       - METRICS_UPDATE_INTERVAL=15
