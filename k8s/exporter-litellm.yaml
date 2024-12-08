@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-exporter-config
+data:
+  DB_MIN_CONNECTIONS: "1"
+  DB_MAX_CONNECTIONS: "10"
+  METRICS_UPDATE_INTERVAL: "15"
+  METRICS_SPEND_WINDOW: "30d"
+  METRICS_REQUEST_WINDOW: "24h"
+  METRICS_ERROR_WINDOW: "1h"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: litellm-exporter-secrets
+type: Opaque
+data:
+  # Base64 encoded values - replace with your actual values
+  LITELLM_DB_HOST: ""      # echo -n "your-db-host" | base64
+  LITELLM_DB_PORT: ""      # echo -n "5432" | base64
+  LITELLM_DB_NAME: ""      # echo -n "your-db-name" | base64
+  LITELLM_DB_USER: ""      # echo -n "your-db-user" | base64
+  LITELLM_DB_PASSWORD: ""  # echo -n "your-db-password" | base64
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm-exporter
+  labels:
+    app: litellm-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: litellm-exporter
+  template:
+    metadata:
+      labels:
+        app: litellm-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      containers:
+      - name: litellm-exporter
+        image: nicholascecere/exporter-litellm:latest
+        ports:
+        - containerPort: 9090
+        envFrom:
+        - configMapRef:
+            name: litellm-exporter-config
+        - secretRef:
+            name: litellm-exporter-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm-exporter
+  labels:
+    app: litellm-exporter
+spec:
+  selector:
+    app: litellm-exporter
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics

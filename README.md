@@ -110,37 +110,84 @@ Different time windows affect both metric accuracy and database performance:
 
 The easiest way to get started is using Docker Compose:
 
-1. Clone the repository and navigate to the directory:
-```bash
-git clone https://github.com/yourusername/exporter-litellm.git
-cd exporter-litellm
-```
-
-2. Update the database connection details in docker-compose.yml:
+1. Create a docker-compose.yml file:
 ```yaml
-environment:
-  - LITELLM_DB_HOST=your-db-host
-  - LITELLM_DB_USER=your-db-user
-  - LITELLM_DB_PASSWORD=your-db-password
+services:
+  litellm-exporter:
+    image: nicholascecere/exporter-litellm:latest
+    platform: linux/amd64
+    ports:
+      - "9090:9090"
+    environment:
+      - LITELLM_DB_HOST=your-db-host
+      - LITELLM_DB_PORT=5432
+      - LITELLM_DB_NAME=your-db-name
+      - LITELLM_DB_USER=your-db-user
+      - LITELLM_DB_PASSWORD=your-db-password
+      - DB_MIN_CONNECTIONS=1
+      - DB_MAX_CONNECTIONS=10
+      - METRICS_UPDATE_INTERVAL=15
+      - METRICS_SPEND_WINDOW=30d
+      - METRICS_REQUEST_WINDOW=24h
+      - METRICS_ERROR_WINDOW=1h
 ```
 
-3. Start the exporter:
+2. Start the exporter:
 ```bash
 docker-compose up -d
 ```
 
 The exporter will start on port 9090 and connect to your existing LiteLLM database.
 
-## Running with Docker
+## Running with Kubernetes
 
-If you want to run just the exporter (assuming you have your own database):
+The exporter can be deployed to Kubernetes using the provided manifests in the `k8s` directory:
 
-1. Build the Docker image:
+1. First, encode your database credentials:
 ```bash
-docker build -t litellm-exporter .
+echo -n "your-db-host" | base64
+echo -n "5432" | base64
+echo -n "your-db-name" | base64
+echo -n "your-db-user" | base64
+echo -n "your-db-password" | base64
 ```
 
-2. Run the container:
+2. Update the Secret in `k8s/exporter-litellm.yaml` with your base64-encoded values:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: litellm-exporter-secrets
+type: Opaque
+data:
+  LITELLM_DB_HOST: "base64-encoded-host"
+  LITELLM_DB_PORT: "base64-encoded-port"
+  LITELLM_DB_NAME: "base64-encoded-name"
+  LITELLM_DB_USER: "base64-encoded-user"
+  LITELLM_DB_PASSWORD: "base64-encoded-password"
+```
+
+3. Apply the Kubernetes manifests:
+```bash
+kubectl apply -f k8s/exporter-litellm.yaml
+```
+
+This will create:
+- A ConfigMap with exporter configuration
+- A Secret containing database credentials
+- A Deployment running the exporter
+- A Service exposing the metrics endpoint
+
+The exporter will be available at `http://litellm-exporter:9090` within your cluster. The deployment includes:
+- Resource limits and requests
+- Liveness and readiness probes
+- Prometheus scrape annotations
+- Configurable replicas (default: 1)
+
+## Running with Docker
+
+You can run the exporter directly with Docker:
+
 ```bash
 docker run -d \
   -p 9090:9090 \
@@ -155,7 +202,7 @@ docker run -d \
   -e METRICS_SPEND_WINDOW=30d \
   -e METRICS_REQUEST_WINDOW=24h \
   -e METRICS_ERROR_WINDOW=1h \
-  litellm-exporter
+  nicholascecere/exporter-litellm:latest
 ```
 
 ## Running Locally

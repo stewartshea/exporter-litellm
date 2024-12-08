@@ -1,6 +1,6 @@
 services:
   litellm-exporter:
-    image: ghcr.io/ncecere/exporter-litellm:latest
+    image: nicholascecere/exporter-litellm:latest
     platform: linux/amd64
     ports:
       - "9090:9090"
