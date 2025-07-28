@@ -165,6 +165,8 @@ data:
   LITELLM_DB_USER: "base64-encoded-user"
   LITELLM_DB_PASSWORD: "base64-encoded-password"
 ```
+The Deployment uses `valueFrom.secretKeyRef` to inject these credentials into
+the container's environment.
 3. Apply the Kubernetes manifests:
 ```bash
 kubectl apply -f k8s/exporter-litellm.yaml

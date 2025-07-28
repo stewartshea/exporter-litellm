@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Kubernetes Deployment now pulls the container image from GHCR
 - Database credentials are provided via a Kubernetes Secret
+- Deployment environment variables use `valueFrom.secretKeyRef`
 
 
 ## [1.0.0] - 2024-01-10
