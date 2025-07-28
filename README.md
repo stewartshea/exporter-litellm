@@ -151,8 +151,15 @@ echo -n "your-db-name" | base64
 echo -n "your-db-user" | base64
 echo -n "your-db-password" | base64
 ```
+2. Create a Docker registry secret named `ghcr-credentials` for pulling the image from GHCR:
+```bash
+kubectl create secret docker-registry ghcr-credentials \
+  --docker-server=ghcr.io \
+  --docker-username=<your-gh-username> \
+  --docker-password=<your-ghcr-token>
+```
 
-2. Update the Secret in `k8s/exporter-litellm.yaml` with your base64-encoded values:
+3. Update the Secret in `k8s/exporter-litellm.yaml` with your base64-encoded values:
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -166,8 +173,7 @@ data:
   LITELLM_DB_USER: "base64-encoded-user"
   LITELLM_DB_PASSWORD: "base64-encoded-password"
 ```
-
-3. Apply the Kubernetes manifests:
+4. Apply the Kubernetes manifests:
 ```bash
 kubectl apply -f k8s/exporter-litellm.yaml
 ```
@@ -175,6 +181,7 @@ kubectl apply -f k8s/exporter-litellm.yaml
 This will create:
 - A ConfigMap with exporter configuration
 - A Secret containing database credentials
+- A Secret for pulling the container image from GHCR
 - A Deployment running the exporter
 - A Service exposing the metrics endpoint
 
