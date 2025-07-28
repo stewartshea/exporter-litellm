@@ -5,6 +5,13 @@ All notable changes to the LiteLLM Prometheus Exporter will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-07-28
+### Changed
+- Kubernetes Deployment now pulls the container image from GHCR
+- Database credentials are provided via a Kubernetes Secret
+- Deployment environment variables use `valueFrom.secretKeyRef`
+
+
 ## [1.0.0] - 2024-01-10
 
 ### Added

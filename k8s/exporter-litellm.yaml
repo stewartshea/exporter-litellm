@@ -22,6 +22,7 @@ data:
   LITELLM_DB_NAME: ""      # echo -n "your-db-name" | base64
   LITELLM_DB_USER: ""      # echo -n "your-db-user" | base64
   LITELLM_DB_PASSWORD: ""  # echo -n "your-db-password" | base64
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,14 +45,38 @@ spec:
     spec:
       containers:
       - name: litellm-exporter
-        image: nicholascecere/exporter-litellm:latest
+        image: ghcr.io/ncecere/exporter-litellm:v1.0.0
         ports:
         - containerPort: 9090
         envFrom:
         - configMapRef:
             name: litellm-exporter-config
-        - secretRef:
-            name: litellm-exporter-secrets
+        env:
+        - name: LITELLM_DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: litellm-exporter-secrets
+              key: LITELLM_DB_HOST
+        - name: LITELLM_DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: litellm-exporter-secrets
+              key: LITELLM_DB_PORT
+        - name: LITELLM_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: litellm-exporter-secrets
+              key: LITELLM_DB_NAME
+        - name: LITELLM_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: litellm-exporter-secrets
+              key: LITELLM_DB_USER
+        - name: LITELLM_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: litellm-exporter-secrets
+              key: LITELLM_DB_PASSWORD
         resources:
           requests:
             cpu: 100m
