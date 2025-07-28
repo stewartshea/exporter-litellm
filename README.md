@@ -151,7 +151,6 @@ echo -n "your-db-name" | base64
 echo -n "your-db-user" | base64
 echo -n "your-db-password" | base64
 ```
-
 2. Update the Secret in `k8s/exporter-litellm.yaml` with your base64-encoded values:
 ```yaml
 apiVersion: v1
@@ -166,7 +165,8 @@ data:
   LITELLM_DB_USER: "base64-encoded-user"
   LITELLM_DB_PASSWORD: "base64-encoded-password"
 ```
-
+The Deployment uses `valueFrom.secretKeyRef` to inject these credentials into
+the container's environment.
 3. Apply the Kubernetes manifests:
 ```bash
 kubectl apply -f k8s/exporter-litellm.yaml
