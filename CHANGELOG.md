@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2025-07-28
 ### Changed
-- Kubernetes Deployment pulls image from GHCR using `imagePullSecrets`
-- Updated README with instructions for creating the GHCR registry secret
+- Kubernetes Deployment now pulls the container image from GHCR
+- Database credentials are provided via a Kubernetes Secret
 
 
 ## [1.0.0] - 2024-01-10
