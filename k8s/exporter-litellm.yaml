@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
       - name: litellm-exporter
-        image: ghcr.io/ncecere/exporter-litellm:v1.0.0
+        image: ghcr.io/stewartshea/exporter-litellm:latest
         ports:
         - containerPort: 9090
         envFrom:
